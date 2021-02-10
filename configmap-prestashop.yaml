@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prestashop-configmap
+  namespace: '306767-project'
+data:
+  prestashop_last_name: "Ulrick"
+  prestashop_first_name: "Ulrick"

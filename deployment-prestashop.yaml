@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-prestashop
+  labels:
+    app: prestashop-app
+  namespace: 306767-project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prestashop-app
+  template:
+    metadata:
+      name: deployment-prestashop
+      labels:
+        app: prestashop-app
+    spec:
+      containers:
+        - name: prestashop-instance
+          image: bitnami/prestashop:1.7
+          volumeMounts:
+            - mountPath: "/config/prestashop"
+              name: vlm
+          ports:
+            - containerPort: 80
+          env:
+            - name: PRESTASHOP_DATABASE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: 'secret-prestashop'
+                  key: prestashop_db
+            - name: PRESTASHOP_DATABASE_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: 'secret-prestashop'
+                  key: prestashop_db_user
+            - name: PRESTASHOP_DATABASE_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: 'secret-prestashop'
+                  key: prestashop_db_pwd
+            - name: PRESTASHOP_FIRST_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: prestashop-configmap
+                  key: prestashop_first_name
+            - name: PRESTASHOP_LAST_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: 'prestashop-configmap'
+                  key: prestashop_last_name
+      volumes:
+        - name: vlm
+          persistentVolumeClaim:
+            claimName: prestashop-pvc
+

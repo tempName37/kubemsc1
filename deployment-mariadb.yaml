@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: 306767-project
+  name: deployment-mariadb
+  labels:
+    app: mariadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mariadb
+  template:
+    metadata:
+      labels:
+        app: mariadb
+    spec:
+      containers:
+        - name: mariadb
+          image: bitnami/mariadb:10.1
+          volumeMounts:
+            - mountPath: "/config/mariadb"
+              name: vlm
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MARIADB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: secret-prestashop
+                  key: prestashop_db_user
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret-prestashop
+                  key: prestashop_db_pwd
+            - name: MARIADB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: secret-prestashop
+                  key: prestashop_db
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret-prestashop
+                  key: mariadb_root_password
+      volumes:
+        - name: vlm
+          persistentVolumeClaim:
+            claimName: mariadb-pvc
